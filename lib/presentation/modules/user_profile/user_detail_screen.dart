@@ -12,6 +12,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../di/di.dart';
 import '../../bloc/userlist/get_user_detail_bloc/get_user_detail_bloc.dart';
 
+import '../../common_widget/dialog/show_toast.dart';
 import '../../common_widget/loading_widget.dart';
 
 import '../../theme/app_text_theme.dart';
@@ -51,6 +52,12 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return CustomScreenForm(
         appBarColor: AppColor.appBarColor,
@@ -60,17 +67,7 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
         title: 'User Detail Screen',
         child: Column(children: [
           BlocConsumer<GetUserDetailBloc, GetUserDetailState>(
-            listener: (context, state) {
-              if (state is UpdateUserState &&
-                  state.status == BlocStatusState.success) {
-                detailBloc.add(GetUserDetailEvent(userId: widget.id));
-              }
-              if (state is DeleteUserState &&
-                  state.status == BlocStatusState.success) {
-                widget.userBloc.add(GetListUserEvent());
-                Navigator.pop(context);
-              }
-            },
+            listener: _blocListener,
             builder: (context, state) {
               if (state is GetUserDetailInitialState) {
                 detailBloc.add(GetUserDetailEvent(userId: widget.id));
@@ -106,7 +103,7 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                                     width: 1, color: AppColor.appBarColor),
                                 borderRadius:
                                     BorderRadiusDirectional.circular(20)),
-                            child: _imagePath != null
+                            child: _imagePath != null && _image != null
                                 ? ClipRRect(
                                     borderRadius:
                                         BorderRadiusDirectional.circular(20),
@@ -144,66 +141,8 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                                     color: AppColor.white,
                                     size: 30,
                                   ),
-                                  onPressed: () async {
-                                    setState(() {
-                                      showModalBottomSheet<ImageSource>(
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            return Container(
-                                              height: MediaQuery.of(context)
-                                                      .size
-                                                      .height *
-                                                  0.21,
-                                              decoration: const BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.only(
-                                                topLeft: Radius.circular(30),
-                                                topRight: Radius.circular(30),
-                                              )),
-                                              child: Wrap(
-                                                children: [
-                                                  ListTile(
-                                                    leading: const Icon(
-                                                        Icons.photo_library),
-                                                    title:
-                                                        const Text('Gallery'),
-                                                    onTap: () {
-                                                      _pickImage(
-                                                          ImageSource.gallery);
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                    },
-                                                  ),
-                                                  ListTile(
-                                                    leading: const Icon(
-                                                        Icons.camera_alt),
-                                                    title: const Text('Camera'),
-                                                    onTap: () {
-                                                      _pickImage(
-                                                          ImageSource.camera);
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                    },
-                                                  ),
-                                                  ListTile(
-                                                    leading: const Icon(
-                                                        Icons.delete),
-                                                    title: const Text('Remove'),
-                                                    onTap: () {
-                                                      setState(() {
-                                                        _imagePath = null;
-                                                        _image = null;
-                                                      });
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                    },
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                          });
-                                    });
-                                  },
+                                  onPressed: selectSource,
+                                  //
                                 )))
                       ])),
                       RichText(
@@ -346,59 +285,4 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
           ),
         ]));
   }
-
-  // Future<void> showPicker(BuildContext context) async {
-  //   ImageSource? source;
-  //   source = await selectSource();
-  //   detailBloc.add(PickImageEvent(source: source));
-  // }
-
-  // Future<ImageSource?> selectSource() async {
-  //   await showModalBottomSheet<ImageSource>(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return Container(
-  //         height: MediaQuery.of(context).size.height * 0.15,
-  //         decoration: const BoxDecoration(
-  //           borderRadius: BorderRadius.only(
-  //             topLeft: Radius.circular(25),
-  //             topRight: Radius.circular(25),
-  //           ),
-  //         ),
-  //         child: Wrap(
-  //           children: <Widget>[
-  //             const SizedBox(
-  //               height: 10,
-  //             ),
-  //             ListTile(
-  //               leading: const Icon(
-  //                 Icons.photo_library,
-  //               ),
-  //               title: const Text(
-  //                 'Gallery',
-  //                 style: TextStyle(),
-  //               ),
-  //               onTap: () {
-  //                 Navigator.of(context).pop(ImageSource.gallery);
-  //               },
-  //             ),
-  //             ListTile(
-  //               leading: const Icon(
-  //                 Icons.photo_camera,
-  //               ),
-  //               title: const Text(
-  //                 'Camera',
-  //                 style: TextStyle(),
-  //               ),
-  //               onTap: () {
-  //                 Navigator.of(context).pop(ImageSource.camera);
-  //               },
-  //             ),
-  //           ],
-  //         ),
-  //       );
-  //     },
-  //   );
-  //   return null;
-  // }
 }
