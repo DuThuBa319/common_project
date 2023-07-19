@@ -14,7 +14,12 @@ import '../user_detail_screen.dart';
 class UserListCell extends StatefulWidget {
   final UserEntity? userEntity;
   final GetUserBloc userBloc;
-  const UserListCell({Key? key, this.userEntity, required this.userBloc})
+
+  const UserListCell(
+      {Key? key,
+      this.userEntity,
+      required this.userBloc,
+      })
       : super(key: key);
 
   @override

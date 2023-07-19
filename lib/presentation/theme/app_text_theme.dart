@@ -69,6 +69,11 @@ class AppTextTheme {
     fontSize: fontSize5,
     fontWeight: FontWeight.bold,
   );
+  static TextStyle title6 = const TextStyle(
+    color: AppColor.appBarColor,
+    fontSize: fontSize1,
+    fontWeight: FontWeight.bold,
+  );
 
   static TextTheme getDefaultTextTheme() => const TextTheme(
         displaySmall: TextStyle(

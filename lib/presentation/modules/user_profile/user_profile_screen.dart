@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:common_project/presentation/modules/user_profile/widget/user_list_cell.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../bloc/userlist/get_user_bloc/get_user_bloc.dart';
 
+import '../../bloc/userlist/get_user_detail_bloc/get_user_detail_bloc.dart';
 import '../../common_widget/dialog/show_toast.dart';
 import '../../common_widget/loading_widget.dart';
 import '../../route/route_list.dart';
@@ -33,6 +35,7 @@ class _UserListState extends State<UserListScreen> {
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   GetUserBloc get userBloc => BlocProvider.of(context);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

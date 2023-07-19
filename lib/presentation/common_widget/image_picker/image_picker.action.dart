@@ -18,7 +18,7 @@ extension ImagePickerAction on _ImagePickerGridViewState {
     final completer = Completer<ImageSource>();
     await showModalBottomSheet<ImageSource>(
       context: context,
-      builder: (BuildContext bc) {
+      builder: (BuildContext context) {
         return Container(
           height: MediaQuery.of(context).size.height * 0.15,
           decoration: const BoxDecoration(

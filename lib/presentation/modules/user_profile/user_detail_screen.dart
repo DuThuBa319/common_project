@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:common_project/domain/entities/user_entity.dart';
 import 'package:common_project/presentation/bloc/userlist/get_user_bloc/get_user_bloc.dart';
 import 'package:common_project/presentation/common_widget/enum_common.dart';
@@ -5,30 +7,49 @@ import 'package:common_project/presentation/common_widget/screen_form/custom_scr
 import 'package:common_project/presentation/theme/theme_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:full_screen_image/full_screen_image.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../di/di.dart';
 import '../../bloc/userlist/get_user_detail_bloc/get_user_detail_bloc.dart';
 
 import '../../common_widget/loading_widget.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../theme/app_text_theme.dart';
 import 'user_edit_screen.dart';
+part 'user_detail_screen.action.dart';
 
 //Class Home
 class UserDetailScreen extends StatefulWidget {
   final int id;
   final GetUserBloc userBloc;
-  const UserDetailScreen({Key? key, required this.id, required this.userBloc})
-      : super(key: key);
+
+  const UserDetailScreen({
+    Key? key,
+    required this.id,
+    required this.userBloc,
+  }) : super(key: key);
 
   @override
   State<UserDetailScreen> createState() => _UserDetailScreenState();
 }
 
 class _UserDetailScreenState extends State<UserDetailScreen> {
-  final RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
   GetUserDetailBloc get detailBloc => BlocProvider.of(context);
+
+  XFile? _image;
+  String? _imagePath;
+
+  Future<void> _pickImage(ImageSource source) async {
+    final pickedImage = await ImagePicker().pickImage(source: source);
+
+    if (pickedImage != null) {
+      setState(() {
+        _image = pickedImage;
+        _imagePath = pickedImage.path;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return CustomScreenForm(
@@ -69,33 +90,189 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                 UserEntity user = state.viewModel.userDetailEntity!;
                 return Expanded(
                     child: Container(
-                  padding: const EdgeInsets.only(left: 10, right: 10),
+                  padding: const EdgeInsets.only(left: 10),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Center(
-                          child: Container(
-                              height: 100,
-                              width: 100,
-                              decoration: BoxDecoration(
-                                  color: AppColor.appBarColor,
-                                  borderRadius:
-                                      BorderRadiusDirectional.circular(20)),
-                              child: const Icon(
-                                Icons.people_sharp,
-                                size: 30,
-                              ))),
-                      Text(
-                        "User id: ${user.id}",
-                        style: AppTextTheme.body1,
+                          child: Stack(children: [
+                        Container(
+                            margin: const EdgeInsets.only(left: 20),
+                            height: 150,
+                            width: 150,
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                    width: 1, color: AppColor.appBarColor),
+                                borderRadius:
+                                    BorderRadiusDirectional.circular(20)),
+                            child: _imagePath != null
+                                ? ClipRRect(
+                                    borderRadius:
+                                        BorderRadiusDirectional.circular(20),
+                                    child: FullScreenWidget(
+                                        disposeLevel: DisposeLevel.Low,
+                                        child: Hero(
+                                          tag: "",
+                                          child: Image.file(File(_imagePath!),
+                                              fit: BoxFit.cover),
+                                        )),
+                                  )
+                                : const Icon(Icons.people_alt_outlined,
+                                    color: AppColor.appBarColor, size: 50)),
+                        Container(
+                            decoration: BoxDecoration(
+                                border:
+                                    Border.all(width: 4, color: Colors.white),
+                                color: AppColor.appBarColor,
+                                shape: BoxShape.circle),
+                            margin: const EdgeInsets.only(left: 120, top: 120),
+                            child: SizedBox(
+                                height: 60,
+                                width: 60,
+                                child: IconButton(
+                                  style: IconButton.styleFrom(
+                                    side: const BorderSide(
+                                        width: 2, color: AppColor.appBarColor),
+                                    padding: EdgeInsets.zero,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(25),
+                                    ),
+                                  ),
+                                  icon: const Icon(
+                                    Icons.add_a_photo,
+                                    color: AppColor.white,
+                                    size: 30,
+                                  ),
+                                  onPressed: () async {
+                                    setState(() {
+                                      showModalBottomSheet<ImageSource>(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return Container(
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.21,
+                                              decoration: const BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.only(
+                                                topLeft: Radius.circular(30),
+                                                topRight: Radius.circular(30),
+                                              )),
+                                              child: Wrap(
+                                                children: [
+                                                  ListTile(
+                                                    leading: const Icon(
+                                                        Icons.photo_library),
+                                                    title:
+                                                        const Text('Gallery'),
+                                                    onTap: () {
+                                                      _pickImage(
+                                                          ImageSource.gallery);
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                  ),
+                                                  ListTile(
+                                                    leading: const Icon(
+                                                        Icons.camera_alt),
+                                                    title: const Text('Camera'),
+                                                    onTap: () {
+                                                      _pickImage(
+                                                          ImageSource.camera);
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                  ),
+                                                  ListTile(
+                                                    leading: const Icon(
+                                                        Icons.delete),
+                                                    title: const Text('Remove'),
+                                                    onTap: () {
+                                                      setState(() {
+                                                        _imagePath = null;
+                                                        _image = null;
+                                                      });
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          });
+                                    });
+                                  },
+                                )))
+                      ])),
+                      RichText(
+                        text: TextSpan(
+                          style: DefaultTextStyle.of(context).style,
+                          children: <TextSpan>[
+                            TextSpan(text: 'ID:', style: AppTextTheme.title6),
+                            TextSpan(
+                                text: ' ${user.id} ', style: AppTextTheme.body1)
+                          ],
+                        ),
                       ),
-                      Text('Job: ${user.job}', style: AppTextTheme.body1),
-                      Text("Age: ${user.age}", style: AppTextTheme.body1),
-                      Text("Name: ${user.name}", style: AppTextTheme.body1),
-                      Text('Email: ${user.email}', style: AppTextTheme.body1),
-                      Text('PhoneNumBer: ${user.phoneNumber}',
-                          style: AppTextTheme.body1),
+                      RichText(
+                        text: TextSpan(
+                          style: DefaultTextStyle.of(context).style,
+                          children: <TextSpan>[
+                            TextSpan(text: 'Job:', style: AppTextTheme.title6),
+                            TextSpan(
+                                text: ' ${user.job} ',
+                                style: AppTextTheme.body1)
+                          ],
+                        ),
+                      ),
+                      RichText(
+                        text: TextSpan(
+                          style: DefaultTextStyle.of(context).style,
+                          children: <TextSpan>[
+                            TextSpan(text: 'Age:', style: AppTextTheme.title6),
+                            TextSpan(
+                                text: ' ${user.age} ',
+                                style: AppTextTheme.body1)
+                          ],
+                        ),
+                      ),
+                      RichText(
+                        text: TextSpan(
+                          style: DefaultTextStyle.of(context).style,
+                          children: <TextSpan>[
+                            TextSpan(text: 'Name:', style: AppTextTheme.title6),
+                            TextSpan(
+                                text: ' ${user.name} ',
+                                style: AppTextTheme.body1)
+                          ],
+                        ),
+                      ),
+                      RichText(
+                        text: TextSpan(
+                          style: DefaultTextStyle.of(context).style,
+                          children: <TextSpan>[
+                            TextSpan(
+                                text: 'Email:', style: AppTextTheme.title6),
+                            TextSpan(
+                                text: ' ${user.email} ',
+                                style: AppTextTheme.body1)
+                          ],
+                        ),
+                      ),
+                      RichText(
+                        text: TextSpan(
+                          style: DefaultTextStyle.of(context).style,
+                          children: <TextSpan>[
+                            TextSpan(
+                                text: 'Phone:', style: AppTextTheme.title6),
+                            TextSpan(
+                                text: ' ${user.phoneNumber} ',
+                                style: AppTextTheme.body1)
+                          ],
+                        ),
+                      ),
                       Container(
                           margin: const EdgeInsets.only(left: 250),
                           child: Row(children: [
@@ -113,10 +290,8 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                                       ),
                                     ),
                                     onPressed: () async {
-                                      BlocProvider.of<GetUserDetailBloc>(
-                                              context)
-                                          .add(DeleteUserEvent(
-                                              userId: user.id!));
+                                      detailBloc.add(
+                                          DeleteUserEvent(userId: user.id!));
                                     },
                                     child: const Icon(Icons.delete))),
                             const SizedBox(
@@ -150,7 +325,10 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                                         },
                                       ));
                                     },
-                                    child: const Icon(Icons.edit)))
+                                    child: const Icon(Icons.edit))),
+                            const SizedBox(
+                              width: 10,
+                            ),
                           ]))
                     ],
                   ),
@@ -168,4 +346,59 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
           ),
         ]));
   }
+
+  // Future<void> showPicker(BuildContext context) async {
+  //   ImageSource? source;
+  //   source = await selectSource();
+  //   detailBloc.add(PickImageEvent(source: source));
+  // }
+
+  // Future<ImageSource?> selectSource() async {
+  //   await showModalBottomSheet<ImageSource>(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return Container(
+  //         height: MediaQuery.of(context).size.height * 0.15,
+  //         decoration: const BoxDecoration(
+  //           borderRadius: BorderRadius.only(
+  //             topLeft: Radius.circular(25),
+  //             topRight: Radius.circular(25),
+  //           ),
+  //         ),
+  //         child: Wrap(
+  //           children: <Widget>[
+  //             const SizedBox(
+  //               height: 10,
+  //             ),
+  //             ListTile(
+  //               leading: const Icon(
+  //                 Icons.photo_library,
+  //               ),
+  //               title: const Text(
+  //                 'Gallery',
+  //                 style: TextStyle(),
+  //               ),
+  //               onTap: () {
+  //                 Navigator.of(context).pop(ImageSource.gallery);
+  //               },
+  //             ),
+  //             ListTile(
+  //               leading: const Icon(
+  //                 Icons.photo_camera,
+  //               ),
+  //               title: const Text(
+  //                 'Camera',
+  //                 style: TextStyle(),
+  //               ),
+  //               onTap: () {
+  //                 Navigator.of(context).pop(ImageSource.camera);
+  //               },
+  //             ),
+  //           ],
+  //         ),
+  //       );
+  //     },
+  //   );
+  //   return null;
+  // }
 }

@@ -27,11 +27,13 @@ abstract class ImagePickerState {
   // Status of the state. Schedule "success" "failed" "loading"
   final BlocStatusState status;
 
+  // ignore: library_private_types_in_public_api
   ImagePickerState(this.viewModel, {this.status = BlocStatusState.initial});
 
   // Using copyWith function to retains the before data and just "update some specific props" instead of "update all props"
   // "T" is generic class. "T" is a child class of ImagePickerState (abstract class)
   T copyWith<T extends ImagePickerState>({
+    // ignore: library_private_types_in_public_api
     _ViewModel? viewModel,
     required BlocStatusState status,
   }) {
@@ -44,6 +46,7 @@ abstract class ImagePickerState {
 
 class ImagePickerInitialState extends ImagePickerState {
   ImagePickerInitialState({
+    // ignore: library_private_types_in_public_api
     _ViewModel viewModel = const _ViewModel(),
     BlocStatusState status = BlocStatusState.initial,
   }) : super(viewModel);
@@ -51,6 +54,7 @@ class ImagePickerInitialState extends ImagePickerState {
 
 class GetImageState extends ImagePickerState {
   GetImageState({
+    // ignore: library_private_types_in_public_api
     _ViewModel viewModel = const _ViewModel(),
     BlocStatusState status = BlocStatusState.initial,
   }) : super(viewModel, status: status);
@@ -58,6 +62,7 @@ class GetImageState extends ImagePickerState {
 
 class LoadImageState extends ImagePickerState {
   LoadImageState({
+    // ignore: library_private_types_in_public_api
     _ViewModel viewModel = const _ViewModel(),
     BlocStatusState status = BlocStatusState.initial,
   }) : super(viewModel, status: status);

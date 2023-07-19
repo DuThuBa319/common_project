@@ -3,16 +3,30 @@ part of 'get_user_detail_bloc.dart';
 // ViewModel is used for store all properties which want to be stored, processed and updated, chứa dữ liệu của 1 state
 class _ViewModel {
   final UserEntity? userDetailEntity;
+  final File? imageFile;
+  final bool? isZoomed;
+  final String? imageUrl;
+
   const _ViewModel({
     this.userDetailEntity,
+    this.imageFile,
+    this.isZoomed,
+    this.imageUrl
   });
 
   // Using copyWith function to retains the before data and just "update some specific props" instead of "update all props"
   _ViewModel copyWith({
     UserEntity? userDetailEntity,
+    File? imageFile,
+    bool? isZoomed,
+    String? imageUrl,
   }) {
     return _ViewModel(
-        userDetailEntity: userDetailEntity ?? this.userDetailEntity);
+      userDetailEntity: userDetailEntity ?? this.userDetailEntity,
+      imageFile: imageFile ?? this.imageFile,
+      isZoomed: isZoomed ?? this.isZoomed,
+      imageUrl: imageUrl ?? this.imageUrl,
+    );
   }
 }
 
@@ -35,6 +49,30 @@ abstract class GetUserDetailState {
       status,
     );
   }
+}
+
+class DeleteImageState extends GetDetailUserState {
+ DeleteImageState({
+    // ignore: library_private_types_in_public_api
+    _ViewModel viewModel = const _ViewModel(),
+    BlocStatusState status = BlocStatusState.initial,
+  }) : super(viewModel: viewModel, status: status);
+}
+
+class PickImageState extends GetDetailUserState {
+ PickImageState({
+    // ignore: library_private_types_in_public_api
+    _ViewModel viewModel = const _ViewModel(),
+    BlocStatusState status = BlocStatusState.initial,
+  }) : super(viewModel: viewModel, status: status);
+}
+
+class LoadImageState extends GetDetailUserState {
+  LoadImageState({
+    // ignore: library_private_types_in_public_api
+    _ViewModel viewModel = const _ViewModel(),
+    BlocStatusState status = BlocStatusState.initial,
+  }) : super(viewModel: viewModel, status: status);
 }
 
 class GetUserDetailInitialState extends GetUserDetailState {
@@ -66,8 +104,7 @@ class DeleteUserState extends GetUserDetailState {
   }) : super(viewModel, status: status);
 }
 
-final _factories = <
-    Type,
+final _factories = <Type,
     Function(
   _ViewModel viewModel,
   BlocStatusState status,
@@ -85,6 +122,18 @@ final _factories = <
         status: status,
       ),
   DeleteUserState: (viewModel, status) => DeleteUserState(
+        viewModel: viewModel,
+        status: status,
+      ),
+ PickImageState: (viewModel, status) => PickImageState(
+        viewModel: viewModel,
+        status: status,
+      ),
+  LoadImageState: (viewModel, status) => LoadImageState(
+        viewModel: viewModel,
+        status: status,
+      ),
+ DeleteImageState: (viewModel, status) => DeleteImageState(
         viewModel: viewModel,
         status: status,
       ),

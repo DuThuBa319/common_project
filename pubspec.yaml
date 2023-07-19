@@ -32,6 +32,7 @@ dependencies:
   flutter:
     sdk: flutter
   
+  animated_splash_screen: ^1.3.0
   
 
   #network
@@ -57,12 +58,10 @@ dependencies:
   intl: ^0.18.1
   flutter_spinkit: ^5.2.0
   permission_handler: ^10.4.1
- 
+  shared_preferences: ^2.0.8
   google_mlkit_text_recognition: ^0.9.0
   full_screen_image: ^2.0.0
   dotted_border: ^2.0.0+3
-
-
 dev_dependencies:
   flutter_test:
     sdk: flutter

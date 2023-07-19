@@ -19,8 +19,8 @@ class AppRoute {
     switch (routeSettings.name) {
       case '/home':
         return MaterialPageRoute(builder: (context) => const HomeScreen());
-        case '/login':
-        return  MaterialPageRoute(
+      case '/login':
+        return MaterialPageRoute(
           builder: (context) {
             return BlocProvider<LoginBloc>(
               create: (context) => getIt<LoginBloc>(),
