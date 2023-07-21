@@ -4,8 +4,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
+import "package:image_picker/image_picker.dart";
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:injectable/injectable.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -54,11 +54,6 @@ class GetUserDetailBloc extends Bloc<UserDetailEvent, GetUserDetailState> {
   //     emit(state.copyWith(status: BlocStatusState.failure));
   //   }
   // }
-
-
-
-
-
 
 // REPLACE IMAGE
   Future<void> _onReplaceImage(

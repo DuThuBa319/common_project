@@ -39,7 +39,7 @@ dependencies:
 
   retrofit: ^4.0.1
   #utils
-  image_picker: ^0.8.6 #ns
+  image_picker: ^1.0.1 #ns
   
  
   
@@ -62,6 +62,11 @@ dependencies:
   google_mlkit_text_recognition: ^0.9.0
   full_screen_image: ^2.0.0
   dotted_border: ^2.0.0+3
+  path_provider: ^2.0.2
+  image_gallery_saver: ^2.0.3
+  gallery_saver: ^2.0.1
+  photo_manager: ^2.6.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -77,7 +82,6 @@ dev_dependencies:
   equatable: ^2.0.5
   json_serializable: 
   retrofit_generator:
-
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

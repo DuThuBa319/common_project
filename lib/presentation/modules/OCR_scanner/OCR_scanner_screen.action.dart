@@ -8,6 +8,7 @@ extension OCRScannerScreenAction on _OCRScannerScreenState {
     }
     if (state is GetImageState && state.status == BlocStatusState.success) {
       showToast('Đang tải dữ liệu');
+      
       final InputImage inputImage =
           InputImage.fromFile(state.viewModel.imageFiles![0]);
       log(inputImage.filePath!);
