@@ -13,6 +13,7 @@ class DeleteImageEvent extends ImagePickerEvent {
   final int? index;
 }
 
+// ignore: must_be_immutable
 class ReplaceImageEvent extends ImagePickerEvent {
   ReplaceImageEvent({this.source, this.index});
   ImageSource? source;

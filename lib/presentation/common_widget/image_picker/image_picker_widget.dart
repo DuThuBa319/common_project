@@ -41,7 +41,7 @@ class _ImagePickerGridViewState extends State<ImagePickerGridView> {
     return BlocConsumer<ImagePickerBloc, ImagePickerState>(
       listener: _blocListener,
       builder: (context, state) {
-        if (state.status == BlocStatusState.success) {
+        if (state.status == BlocStatusState.success ){
           imageCount = state.viewModel.imageFiles?.length ?? 0;
           imageFiles = state.viewModel.imageFiles ?? [];
           height = (imageCount ~/ 4 + 1) * 105;
@@ -57,11 +57,11 @@ class _ImagePickerGridViewState extends State<ImagePickerGridView> {
                 )
               : GridView.count(
                   padding: EdgeInsets.zero,
-                  crossAxisSpacing: 15,
-                  mainAxisSpacing: 20,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisCount: 4,
+                  crossAxisSpacing: 15, // Khoảng cách ngang giữa các phần tử con trogn GridView
+                  mainAxisSpacing: 20, // Khoảng cách dọc giữa các phần tử con trogn GridView
+                  shrinkWrap: true,    //True ==> Kích thước của GridView tự động co lại để phù hợp các phần tử con
+                  physics: const NeverScrollableScrollPhysics(), //Never => không được cuộn để lướt các GridView
+                  crossAxisCount: 4,   //Xây dựng số lượng cột trong Gridview = 4 
                   children: List.generate(
                     imageCount + 1,
                     (index) => DottedBorder(

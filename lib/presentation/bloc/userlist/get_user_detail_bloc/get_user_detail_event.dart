@@ -23,6 +23,28 @@ class UpdateUserEvent extends UserDetailEvent {
 }
 
 
+
+
+
+class PickImageEvent extends UserDetailEvent {
+  PickImageEvent({this.source});
+  final ImageSource? source;
+}
+
+
+class DeleteImageEvent extends UserDetailEvent {}
+
+// ignore: must_be_immutable
+class ReplaceImageEvent extends UserDetailEvent {
+  ReplaceImageEvent({this.source});
+  ImageSource? source;
+}
+
+class LoadImageEvent extends UserDetailEvent {
+  LoadImageEvent({this.imageFile});
+  final File? imageFile;
+}
+
 // class FilterUserEvent extends UserEvent {
 //   FilterUserEvent({required this.searchText});
 //   String searchText;

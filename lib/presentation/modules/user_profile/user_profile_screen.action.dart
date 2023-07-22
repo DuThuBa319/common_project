@@ -22,4 +22,5 @@ extension UserListScreenAction on _UserListState {
   void gotoRegistUserScreen() {
     Navigator.pushNamed(context, RouteList.registUser, arguments: userBloc);
   }
+  
 }

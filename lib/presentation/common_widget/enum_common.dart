@@ -13,4 +13,3 @@ enum WeatherWithTimeStatus {
   undefine,
   nightClear
 }
-enum Splash{loGo}
