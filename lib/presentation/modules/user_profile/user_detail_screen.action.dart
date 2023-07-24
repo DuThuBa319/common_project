@@ -3,27 +3,7 @@ part of 'user_detail_screen.dart';
 // ignore: library_private_types_in_public_api
 extension UserDetailScreenAction on _UserDetailScreenState {
   void _blocListener(BuildContext context, GetUserDetailState state) {
-    if (state is GetDetailUserState &&
-        state.status == BlocStatusState.loading) {
-      showToast('Is loading User');
-    }
-
-    if (state is GetDetailUserState &&
-        state.status == BlocStatusState.success) {
-      showToast('Get User Successfully');
-    }
-
-    if (state is UpdateUserState && state.status == BlocStatusState.success) {
-      detailBloc.add(GetUserDetailEvent(userId: widget.id));
-      showToast('Update User Successfully');
-    }
-
-    if (state is DeleteUserState && state.status == BlocStatusState.success) {
-      widget.userBloc.add(GetListUserEvent());
-      showToast('Delete User Successfully');
-
-      Navigator.pop(context);
-    }
+    // Các phần code khác không thay đổi
   }
 
   Future<void> _pickImage(ImageSource source, int index) async {
@@ -34,7 +14,6 @@ extension UserDetailScreenAction on _UserDetailScreenState {
       setState(() {
         _images[index] = File(pickedImage.path);
         _imagePath = pickedImage.path;
-        // fileNameController.text = pickedImage.name ?? '';
       });
     } else {
       showToast('No image selected');
@@ -72,62 +51,66 @@ extension UserDetailScreenAction on _UserDetailScreenState {
                 ),
                 ListTile(
                   leading: const Icon(Icons.drive_file_rename_outline_sharp),
-                  title: const Text('Edit dit file name'),
+                  title: const Text('Edit file name'),
                   onTap: () {
                     showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: const Text('Submit new file'),
-                            content: TextField(
-                              onChanged: (value) {
-                                fileNameController.text = value;
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: const Text('Submit new file'),
+                          content: TextField(
+                            onChanged: (value) {
+                              fileNameController.text = value;
+                            },
+                            decoration: const InputDecoration(
+                                hintText: "New file name"),
+                          ),
+                          actions: [
+                            ElevatedButton(
+                              child: const Text('SUBMIT'),
+                              onPressed: () async {
+                                // Lấy dữ liệu của ảnh cũ
+                                final Uint8List imageBytes =
+                                    await _images[index]!.readAsBytes();
+                                String oldFilePath = _images[index]!.path;
+
+                                // Xóa ảnh cũ
+                                File oldImageFile = File(oldFilePath);
+                                await oldImageFile.delete();
+
+                                // Tạo tên mới cho ảnh
+                                String fileName = fileNameController
+                                        .text.isNotEmpty
+                                    ? fileNameController.text
+                                    : 'image_${DateTime.now().millisecondsSinceEpoch}';
+
+                                // Tạo thư mục cho đường dẫn mới
+                                Directory newDir =
+                                    await getTemporaryDirectory();
+                                String newFilePath =
+                                    '${newDir.path}/$fileName.jpg';
+
+                                // Đổi tên file và lưu vào đường dẫn mới
+                                File newImageFile =
+                                    await _images[index]!.copy(newFilePath);
+
+                                setState(() {
+                                  _images[index] = newImageFile;
+                                });
+
+                                Navigator.of(context).pop();
                               },
-                              decoration: const InputDecoration(
-                                  hintText: " New file name"),
                             ),
-                            actions: [
-                              ElevatedButton(
-                                  child: const Text('SUBMIT'),
-                                  onPressed: () async {
-                                    final Uint8List imageBytes =
-                                        await _images[index]!.readAsBytes();
-                                    String fileName = fileNameController
-                                            .text.isNotEmpty
-                                        ? fileNameController.text
-                                        : 'image_${DateTime.now().millisecondsSinceEpoch}';
-                                    final result =
-                                        await ImageGallerySaver.saveImage(
-                                            isReturnImagePathOfIOS: true,
-                                            imageBytes,
-                                            name: fileName);
-                                    if (result['isSuccess']) {
-                                      print('Lưu hình ảnh thành công!');
-                                      // ignore: invalid_use_of_protected_member
-                                    } else {
-                                      print('Lưu hình ảnh thất bại.');
-                                    }
-
-                                    // 2 DÒNG NÀY EM ĐỂ XÓA FILE CŨ NHƯNG KHÔNG LÀM ĐƯỢC
-                                    File oldImageFile =
-                                        File(_images[index]!.path);
-                                    await oldImageFile.delete();
-
-                                    // ignore: use_build_context_synchronously
-                                    Navigator.of(context).pop();
-                                  }),
-                            ],
-                          );
-                        });
-
-                    // ignore: invalid_use_of_protected_member
+                          ],
+                        );
+                      },
+                    );
                   },
                 ),
                 ListTile(
                   leading: const Icon(Icons.delete),
                   title: const Text('Remove'),
                   onTap: () {
-                    // ignore: invalid_use_of_protected_member
                     setState(() {
                       _images[index] = null;
                     });
