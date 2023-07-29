@@ -45,7 +45,7 @@ class _LoginState extends State<LoginScreen> {
                 children: <Widget>[
                   Center(
                     child: Image.asset(
-                      Assets.logoCHA,
+                      Assets.logoFlutter,
                       scale: 3,
                     ),
                   ),
@@ -144,7 +144,8 @@ class _LoginState extends State<LoginScreen> {
                                   },
                                   icon: const Icon(Icons.visibility),
                                   iconSize: 20,
-                                
+                                  padding:
+                                      const EdgeInsets.fromLTRB(0, 0, 0, 0),
                                 )
                               : IconButton(
                                   onPressed: () {
