@@ -6,122 +6,28 @@ extension UserDetailScreenAction on _UserDetailScreenState {
     // Các phần code khác không thay đổi
   }
 
-  // Future<void> _pickImage(ImageSource source, int index) async {
-  //   final pickedImage = await imagePicker.pickImage(
-  //       source: source); // ignore: invalid_use_of_protected_member
-  //   if (pickedImage != null) {
-  //     // ignore: invalid_use_of_protected_member
-  //     setState(() {
-  //       _images[index] = File(pickedImage.path);
-  //       _imagePath = pickedImage.path;
-  //     });
-  //   } else {
-  //     showToast('No image selected');
-  //   }
-  // }
+  Future<void> downloadAndSaveImage(String imageUrl, String fileName) async {
+    var response = await http.get(Uri.parse(imageUrl));
 
-  // void selectSource(BuildContext context, int index) async {
-  //   await showModalBottomSheet<ImageSource>(
-  //       context: context,
-  //       builder: (BuildContext context) {
-  //         return Container(
-  //           height: MediaQuery.of(context).size.height * 0.26,
-  //           decoration: const BoxDecoration(
-  //               borderRadius: BorderRadius.only(
-  //             topLeft: Radius.circular(30),
-  //             topRight: Radius.circular(30),
-  //           )),
-  //           child: Wrap(
-  //             children: [
-  //               ListTile(
-  //                 leading: const Icon(Icons.photo_library),
-  //                 title: const Text('Gallery'),
-  //                 onTap: () {
-  //                   _pickImage(ImageSource.gallery, index);
-  //                   Navigator.of(context).pop();
-  //                 },
-  //               ),
-  //               ListTile(
-  //                 leading: const Icon(Icons.camera_alt),
-  //                 title: const Text('Camera'),
-  //                 onTap: () {
-  //                   _pickImage(ImageSource.camera, index);
-  //                   Navigator.of(context).pop();
-  //                 },
-  //               ),
-  //               ListTile(
-  //                 leading: const Icon(Icons.drive_file_rename_outline_sharp),
-  //                 title: const Text('Edit file name'),
-  //                 onTap: () {
-  //                   showDialog(
-  //                     context: context,
-  //                     builder: (context) {
-  //                       return AlertDialog(
-  //                         title: const Text('Submit new file'),
-  //                         content: TextField(
-  //                           onChanged: (value) {
-  //                            folderPath.text = value;
-  //                           },
-  //                           decoration: const InputDecoration(
-  //                               hintText: "New file name"),
-  //                         ),
-  //                         actions: [
-  //                           ElevatedButton(
-  //                             child: const Text('SUBMIT'),
-  //                             onPressed: () {
-  //                               // // Lấy dữ liệu của ảnh cũ
-  //                               // final Uint8List imageBytes =
-  //                               //     await _images[index]!.readAsBytes();
-  //                               // String oldFilePath = _images[index]!.path;
+    if (response.statusCode == 200) {
+      final Directory directory = await getApplicationDocumentsDirectory();
+      String filePath = '${directory.path}/assets/$fileName';
 
-  //                               // // Xóa ảnh cũ
-  //                               // File oldImageFile = File(oldFilePath);
-  //                               // await oldImageFile.delete();
+      final File file = File(filePath);
+      await file.writeAsBytes(response.bodyBytes);
 
-  //                               // // Tạo tên mới cho ảnh
-  //                               // String fileName = fileNameController
-  //                               //         .text.isNotEmpty
-  //                               //     ? fileNameController.text
-  //                               //     : 'image_${DateTime.now().millisecondsSinceEpoch}';
+      print('Hình ảnh đã được tải xuống và lưu thành công!');
 
-  //                               // // Tạo thư mục cho đường dẫn mới
-  //                               // Directory newDir =
-  //                               //     await getTemporaryDirectory();
-  //                               // String newFilePath =
-  //                               //     '${newDir.path}/$fileName.jpg';
+      // Đổi tên nếu cần thiết
+      String newFileName = 'new_$fileName';
+      String newPath = '${directory.path}/assets/$newFileName';
 
-  //                               // // Đổi tên file và lưu vào đường dẫn mới
-  //                               // File newImageFile =
-  //                               //     await _images[index]!.copy(newFilePath);
+      await file.rename(newPath);
 
-  //                               // setState(() {
-  //                               //   _images[index] = newImageFile;
-  //                               // });
-
-  //                               Navigator.of(context).pop();
-  //                             },
-  //                           ),
-  //                         ],
-  //                       );
-  //                     },
-  //                   );
-  //                 },
-  //               ),
-  //               ListTile(
-  //                 leading: const Icon(Icons.delete),
-  //                 title: const Text('Remove'),
-  //                 onTap: () {
-  //                   // ignore: invalid_use_of_protected_member
-  //                   setState(() {
-  //                     _images[index] = null;
-  //                   });
-  //                   Navigator.of(context).pop();
-  //                 },
-  //               ),
-  //             ],
-  //           ),
-  //         );
-  //       });
-  //   return;
-  // }
+      print('Hình ảnh đã được đổi tên thành công!');
+    } else {
+      print('Lỗi khi tải xuống hình ảnh!');
+    }
+  }
+  
 }

@@ -40,7 +40,7 @@ dependencies:
   retrofit: ^4.0.1
   #utils
   image_picker: ^1.0.1 #ns
-  
+  http: ^1.1.0
  
   
 

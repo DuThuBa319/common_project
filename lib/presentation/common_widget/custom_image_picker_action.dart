@@ -2,6 +2,7 @@ part of 'custom_image_picker.dart';
 
 // ignore: library_private_types_in_public_api
 extension ImagePickerAction on _ImagePickerWithGridViewState {
+
   Future<XFile?> sourceCamera(ImageSource source) async {
     final pickedFile =
         await picker.pickImage(imageQuality: 100, source: source);
@@ -19,10 +20,10 @@ extension ImagePickerAction on _ImagePickerWithGridViewState {
     final List<String> imagePaths =
         await AssetImagePicker.pickImagePathsFromAssetFolder(folderPath);
     final pickedFiles =
-        <XFile?>[]; // Tạo một danh sách rỗng để lưu trữ các XFile
+        <XFile?>[];     // Tạo một danh sách rỗng để lưu trữ các XFile
     for (final imagePath in imagePaths) {
       final byteData = await rootBundle.load(
-          imagePath); // hàm  rootBundle.load Tải hình ảnh như là một ByteData
+          imagePath);   // hàm  rootBundle.load Tải hình ảnh như là một ByteData
       final uint8List =
           byteData.buffer.asUint8List(); // Chuyển đổi ByteData thành Uint8List
       final tempDir =

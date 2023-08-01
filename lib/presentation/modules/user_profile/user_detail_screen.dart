@@ -1,14 +1,17 @@
+import 'dart:io';
+import 'package:http/http.dart' as http;
 import 'package:common_project/domain/entities/user_entity.dart';
 import 'package:common_project/presentation/bloc/userlist/get_user_bloc/get_user_bloc.dart';
-import 'package:common_project/presentation/common_widget/custom_image_picker_single.dart';
 import 'package:common_project/presentation/common_widget/enum_common.dart';
 import 'package:common_project/presentation/common_widget/screen_form/custom_screen_form.dart';
 import 'package:common_project/presentation/theme/theme_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import '../../../di/di.dart';
 import '../../bloc/userlist/get_user_detail_bloc/get_user_detail_bloc.dart';
+import '../../common_widget/custom_image_picker.dart';
 import '../../common_widget/loading_widget.dart';
 import '../../theme/app_text_theme.dart';
 import 'user_edit_screen.dart';
@@ -18,6 +21,7 @@ part 'user_detail_screen.action.dart';
 class UserDetailScreen extends StatefulWidget {
   final int id;
   final GetUserBloc userBloc;
+
 
   const UserDetailScreen({
     Key? key,
@@ -32,6 +36,8 @@ class UserDetailScreen extends StatefulWidget {
 class _UserDetailScreenState extends State<UserDetailScreen> {
   GetUserDetailBloc get detailBloc => BlocProvider.of(context);
   String? folderPath;
+   String imageUrl = 'https://example.com/image.jpg';
+   String fileName = 'image.jpg';
   final imagePicker = ImagePicker();
 
   // String selectedImageName = '';
@@ -78,7 +84,7 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                       ImagePickerSingle(
+                        ImagePickerWithGridView(
                           isOnTapActive: true,
                           folderPath: folderPath,
                         ),
