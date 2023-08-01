@@ -32,25 +32,18 @@ import '../data/data_source/remote/module_repositories/user_api_repository_impl.
 import '../domain/repositories/example/example_repository.dart' as _i17;
 import '../domain/repositories/temperature_repo/temperature_repository.dart'
     as _i8;
-import '../domain/repositories/user_detail_repository.dart' as _i22;
-import '../domain/repositories/user_detail_repository.impl.dart' as _i23;
-import '../domain/repositories/user_repository.dart' as _i24;
+import '../domain/repositories/user_detail_repository.dart' as _i20;
+import '../domain/repositories/user_detail_repository.impl.dart' as _i21;
+import '../domain/repositories/user_repository.dart' as _i22;
 import '../domain/usecases/example_usecase/example_usecase.dart' as _i18;
 import '../domain/usecases/temperature_usecase/temperature_usecase.dart'
-    as _i21;
+    as _i19;
 import '../domain/usecases/user_detail_usecase.dart' as _i11;
 import '../domain/usecases/user_usecase.dart' as _i14;
-import '../presentation/bloc/daily_weather_bloc/daily_weather_bloc.dart'
-    as _i25;
-import '../presentation/bloc/hourly_temperarute_bloc/hourly_temperature_bloc.dart'
-    as _i26;
 import '../presentation/bloc/login/login_bloc.dart' as _i5;
-import '../presentation/bloc/userlist/get_user_bloc/get_user_bloc.dart' as _i19;
-import '../presentation/bloc/userlist/get_user_detail_bloc/get_user_detail_bloc.dart'
-    as _i20;
 import '../presentation/common_widget/image_picker/image_picker_bloc/image_picker_bloc.dart'
     as _i4;
-import 'di.dart' as _i27;
+import 'di.dart' as _i23;
 
 // ignore_for_file: unnecessary_lambdas
 // ignore_for_file: lines_longer_than_80_chars
@@ -90,20 +83,13 @@ _i1.GetIt $initGetIt(
       () => _i17.ExampleRepositoryImpl(gh<_i15.WeatherRepository>()));
   gh.factory<_i18.ExampleUsecase>(
       () => _i18.ExampleUsecaseImpl(gh<_i15.WeatherRepository>()));
-  gh.factory<_i19.GetUserBloc>(() => _i19.GetUserBloc(gh<_i14.UserUsecase>()));
-  gh.factory<_i20.GetUserDetailBloc>(
-      () => _i20.GetUserDetailBloc(gh<_i11.UserDetailUsecase>()));
-  gh.factory<_i21.HourlyTemperatureUsecase>(() =>
-      _i21.HourlyTemperatureUsecaseImpl(gh<_i6.TemperatureApiRepository>()));
-  gh.factory<_i22.UserDetailModelRepository>(
-      () => _i23.UserDetailRepositoryImpl(gh<_i9.UserDetailRepository>()));
-  gh.factory<_i24.UserListRepository>(
-      () => _i24.UserListRepositoryImpl(gh<_i12.UserRepository>()));
-  gh.factory<_i25.DailyWeatherBloc>(
-      () => _i25.DailyWeatherBloc(gh<_i18.ExampleUsecase>()));
-  gh.factory<_i26.HourlyTemperatureBloc>(
-      () => _i26.HourlyTemperatureBloc(gh<_i21.HourlyTemperatureUsecase>()));
+  gh.factory<_i19.HourlyTemperatureUsecase>(() =>
+      _i19.HourlyTemperatureUsecaseImpl(gh<_i6.TemperatureApiRepository>()));
+  gh.factory<_i20.UserDetailModelRepository>(
+      () => _i21.UserDetailRepositoryImpl(gh<_i9.UserDetailRepository>()));
+  gh.factory<_i22.UserListRepository>(
+      () => _i22.UserListRepositoryImpl(gh<_i12.UserRepository>()));
   return getIt;
 }
 
-class _$DioProvider extends _i27.DioProvider {}
+class _$DioProvider extends _i23.DioProvider {}

@@ -195,23 +195,23 @@ class _CustomScreenFormState extends State<CustomScreenForm> {
     }
     if (widget.selectedIndex == 0) {
       if (index == 1 && index != widget.selectedIndex) {
-        Navigator.pushNamed(context, RouteList.shoppingCart);
+        //      Navigator.pushNamed(context, RouteList.shoppingCart);
       }
       if (index == 2 && index != widget.selectedIndex) {
-        Navigator.pushNamed(context, RouteList.userList);
+        //     Navigator.pushNamed(context, RouteList.userList);
       }
       if (index == 3 && index != widget.selectedIndex) {
-        Navigator.pushNamed(context, RouteList.example);
+        //    Navigator.pushNamed(context, RouteList.example);
       }
     } else {
       if (index == 1 && index != widget.selectedIndex) {
-        Navigator.pushReplacementNamed(context, RouteList.shoppingCart);
+        //   Navigator.pushReplacementNamed(context, RouteList.shoppingCart);
       }
       if (index == 2 && index != widget.selectedIndex) {
-        Navigator.pushReplacementNamed(context, RouteList.userList);
+        //    Navigator.pushReplacementNamed(context, RouteList.userList);
       }
       if (index == 3 && index != widget.selectedIndex) {
-        Navigator.pushReplacementNamed(context, RouteList.example);
+        //    Navigator.pushReplacementNamed(context, RouteList.example);
       }
     }
   }
