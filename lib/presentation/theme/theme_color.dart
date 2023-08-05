@@ -13,7 +13,7 @@ class AppColor {
   static const Color greyF3 = Color(0xFFf3f3f3);
   static const Color greyD9 = Color(0xFFd9d9d9);
   static const Color scaffoldBackgroundColor = Color(0xFFF1F3F7);
-
+  static const Color midnight = Color(0xfff191970);
   static const Color inactiveColor = Color(0xFF111111);
   static const Color activeColor = primaryColor;
 

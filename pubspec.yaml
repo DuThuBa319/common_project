@@ -62,14 +62,14 @@ dependencies:
   full_screen_image: ^2.0.0
   dotted_border: ^2.0.0+3
   path_provider: ^2.0.2
-  file_manager: ^1.0.2
+  image_gallery_saver: ^2.0.3
 dev_dependencies:
   flutter_test:
     sdk: flutter
   injectable: ^2.1.1
   build_runner: ^2.2.0
   injectable_generator: ^2.1.5
-  http: ^1.1.0
+  font_awesome_flutter: ^10.5.0
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
@@ -91,8 +91,11 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - lib/assets/images/
     - lib/assets/
+    - lib/assets/images/
+
+  
+
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 

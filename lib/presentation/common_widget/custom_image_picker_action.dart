@@ -2,7 +2,6 @@ part of 'custom_image_picker.dart';
 
 // ignore: library_private_types_in_public_api
 extension ImagePickerAction on _ImagePickerWithGridViewState {
-
   Future<XFile?> sourceCamera(ImageSource source) async {
     final pickedFile =
         await picker.pickImage(imageQuality: 100, source: source);
@@ -15,21 +14,35 @@ extension ImagePickerAction on _ImagePickerWithGridViewState {
     return pickedFile;
   }
 
-// Chọn ảnh từ thư mục trong folder assets
-  Future<List<XFile?>> pickImagesFromAssetFolder(String folderPath) async {
+//PICK IMAGE FROM URL
+//   Future<File> _downloadImage(String url) async {
+//   var response = await http.get(Uri.parse(url));
+//   final documentDirectory = await getApplicationDocumentsDirectory();
+//   final filePath = '${documentDirectory.path}/${DateTime.now().millisecondsSinceEpoch.toString()}.png';
+//   File file = File(filePath);
+//   await file.writeAsBytes(response.bodyBytes);
+//   return file;
+// }
+// void _pickImageFromNetwork(String imageUrl) async {
+//   File imageFile = await _downloadImage(imageUrl);
+// }
+
+// Chọn ảnh từ thư mục trong asset assets
+  Future<List<XFile?>> pickImagesFromAssetasset(String assetPath) async {
     final List<String> imagePaths =
-        await AssetImagePicker.pickImagePathsFromAssetFolder(folderPath);
+        await AssetImagePicker.pickImagePathsFromAssetasset(assetPath);
     final pickedFiles =
-        <XFile?>[];     // Tạo một danh sách rỗng để lưu trữ các XFile
+        <XFile?>[]; // Tạo một danh sách rỗng để lưu trữ các XFile
     for (final imagePath in imagePaths) {
       final byteData = await rootBundle.load(
-          imagePath);   // hàm  rootBundle.load Tải hình ảnh như là một ByteData
+          imagePath); // hàm  rootBundle.load Tải hình ảnh như là một ByteData
       final uint8List =
           byteData.buffer.asUint8List(); // Chuyển đổi ByteData thành Uint8List
       final tempDir =
           await getTemporaryDirectory(); // Lấy đường dẫn thư mục tạm thời
-      final tempPath =
-          '${tempDir.path}/${basename(imagePath)}'; // Đường dẫn tạm thời cho hình ảnh
+      final tempPath = '${tempDir.path}/${basename(imagePath)}';
+      print(tempPath);
+      // Đường dẫn tạm thời cho hình ảnh
       await File(tempPath)
           .writeAsBytes(uint8List); // Ghi Uint8List vào tệp tạm thời
       pickedFiles.add(
@@ -61,8 +74,10 @@ extension ImagePickerAction on _ImagePickerWithGridViewState {
                     if (pickedFile != null) {
                       // ignore: invalid_use_of_protected_member
                       setState(() {
-                        imageList.add(pickedFile);
+                        widget.imageList.add(pickedFile);
                         showToast('Pick image successfully');
+                        print(pickedFile.path);
+                        print(widget.imageList);
                       });
                     }
                   }
@@ -79,8 +94,10 @@ extension ImagePickerAction on _ImagePickerWithGridViewState {
                     if (pickedFile != null) {
                       // ignore: invalid_use_of_protected_member
                       setState(() {
-                        imageList.add(pickedFile);
+                        widget.imageList.add(pickedFile);
+
                         showToast('Pick image successfully');
+                        print(widget.imageList);
                       });
                     }
                   }
@@ -88,9 +105,27 @@ extension ImagePickerAction on _ImagePickerWithGridViewState {
                   Navigator.of(context).pop();
                 },
               ),
+              //   ListTile(
+              //   leading: const Icon(Icons.download_for_offline_outlined),
+              //   title: const Text('Network'),
+              //   onTap: () async {
+              //     if (widget.isOnTapActive == true) {
+              //       final pickedFile = await sourceCamera(ImageSource.camera);
+              //       if (pickedFile != null) {
+              //         // ignore: invalid_use_of_protected_member
+              //         setState(() {
+              //           widget.imageList.add(pickedFile);
+              //           showToast('Pick image successfully');
+              //         });
+              //       }
+              //     }
+              //     // ignore: use_build_context_synchronously
+              //     Navigator.of(context).pop();
+              //   },
+              // ),
               ListTile(
                 leading: const Icon(Icons.image),
-                title: const Text('Asset Folder'),
+                title: const Text('Asset asset'),
                 onTap: () async {
                   if (widget.isOnTapActive == true) {
                     showDialog(
@@ -104,7 +139,7 @@ extension ImagePickerAction on _ImagePickerWithGridViewState {
                           content: TextField(
                               controller: TextEditingController(
                                   text: "lib/assets/images/"),
-                              onChanged: (value) => widget.folderPath = value),
+                              onChanged: (value) => widget.assetPath = value),
                           actions: <Widget>[
                             // Các button trong AlertDialog
                             TextButton(
@@ -117,18 +152,18 @@ extension ImagePickerAction on _ImagePickerWithGridViewState {
                             TextButton(
                                 child: const Text('Pick Image'),
                                 onPressed: () async {
-                                  print(widget.folderPath);
-                                  if (widget.folderPath != "") {
+                                  print(widget.assetPath);
+                                  if (widget.assetPath != "") {
                                     final pickedFiles =
-                                        await pickImagesFromAssetFolder(
-                                            widget.folderPath!);
+                                        await pickImagesFromAssetasset(
+                                            widget.assetPath!);
                                     // ignore: invalid_use_of_protected_member
-                                    setState(() {
-                                      imageList.addAll(pickedFiles);
-                                      showToast('Pick image successfully');
+                                    // setState(() {
+                                    //   widget.imageList.addAll(pickedFiles);
+                                    //   showToast('Pick image successfully');
 
-                                      // ignore: list_remove_unrelated_type
-                                    });
+                                    //   // ignore: list_remove_unrelated_type
+                                    // });
                                   } else {
                                     Navigator.pop(context);
                                   }
@@ -142,6 +177,7 @@ extension ImagePickerAction on _ImagePickerWithGridViewState {
                         );
                       },
                     );
+                    print(widget.imageList);
                   }
                   // ignore: use_build_context_synchronously
                 },
@@ -156,22 +192,21 @@ extension ImagePickerAction on _ImagePickerWithGridViewState {
   void deleteImage(int index) {
     // ignore: invalid_use_of_protected_member
     setState(() {
-      imageList.removeAt(index);
+      widget.imageList.removeAt(index);
     });
   }
 }
 
 class AssetImagePicker {
-  /*pickImagePathsFromAssetFolder nhận đầu vào là đường dẫn của thư mục folder và 
+  /*pickImagePathsFromAssetasset nhận đầu vào là đường dẫn của thư mục asset và 
   trả về một Future<List<String>> chứa danh sách các đường dẫn hình ảnh 
   trong thư mục tương ứng.*/
-  static Future<List<String>> pickImagePathsFromAssetFolder(
-      String folderPath) async {
+  static Future<List<String>> pickImagePathsFromAssetasset(
+      String assetPath) async {
     final manifestContent = await rootBundle.loadString('AssetManifest.json');
     final Map<String, dynamic> manifestMap = json.decode(manifestContent);
-
     return manifestMap.keys
-        .where((String key) => key.startsWith(folderPath))
+        .where((String key) => key.startsWith(assetPath))
         .toList();
     // mục đích ==> lấy danh sách các đường dẫn hình ảnh
   }

@@ -1,38 +1,45 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
 import 'package:full_screen_image/full_screen_image.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 // ignore: depend_on_referenced_packages
 import 'package:path/path.dart';
-
 import 'dialog/show_toast.dart';
 part "custom_image_picker_action.dart";
 
 // ignore: must_be_immutable
 class ImagePickerWithGridView extends StatefulWidget {
-  final List<XFile>? imageFiles;
+  final List<XFile> imageList;
   final bool? isOnTapActive;
-  String? folderPath;
+  String? assetPath;
 
   ImagePickerWithGridView({
     Key? key,
-    this.imageFiles,
+    required this.imageList,
     required this.isOnTapActive,
-    required this.folderPath,
+    required this.assetPath,
   }) : super(key: key);
 
   @override
   // ignore: library_private_types_in_public_api
-  _ImagePickerWithGridViewState createState() => _ImagePickerWithGridViewState();
+  _ImagePickerWithGridViewState createState() =>
+      _ImagePickerWithGridViewState();
 }
 
 class _ImagePickerWithGridViewState extends State<ImagePickerWithGridView> {
   final picker = ImagePicker();
-  List<XFile?> imageList = [];
+  // @override
+  // void initState() {
+  //   // TODO: implement initState
+  //   super.initState();
+  //   _convertImagesToXFiles();
+  //   print(imageList);
+  // }
+
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
@@ -44,9 +51,9 @@ class _ImagePickerWithGridViewState extends State<ImagePickerWithGridView> {
       ),
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: imageList.length + 1,
+      itemCount: widget.imageList.length + 1,
       itemBuilder: (context, index) {
-        if (index == imageList.length) {
+        if (index == widget.imageList.length) {
           return Stack(
             children: [
               Container(
@@ -97,27 +104,26 @@ class _ImagePickerWithGridViewState extends State<ImagePickerWithGridView> {
           return Stack(
             children: [
               Container(
-                margin: const EdgeInsets.only(left: 20),
-                height: 150,
-                width: 150,
-                decoration: BoxDecoration(
-                  border: Border.all(width: 1, color: Colors.blue),
-                  borderRadius: BorderRadiusDirectional.circular(20),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadiusDirectional.circular(20),
-                  child: imageList[index] != null
-                      ? FullScreenWidget(
-                          disposeLevel: DisposeLevel.Medium,
-                          child: Image.file(
-                            File(imageList[index]!.path),
-                            fit: BoxFit.cover,
-                          ),
-                        )
-                      : const Icon(Icons.people_alt_outlined,
-                          color: Colors.blue, size: 50),
-                ),
-              ),
+                  margin: const EdgeInsets.only(left: 20),
+                  height: 150,
+                  width: 150,
+                  decoration: BoxDecoration(
+                    border: Border.all(width: 1, color: Colors.blue),
+                    borderRadius: BorderRadiusDirectional.circular(20),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadiusDirectional.circular(20),
+                    child: widget.imageList[index] != null
+                        ? FullScreenWidget(
+                            disposeLevel: DisposeLevel.Medium,
+                            child: Image.file(
+                              File(widget.imageList[index]!.path),
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                        : const Icon(Icons.people_alt_outlined,
+                            color: Colors.blue, size: 50),
+                  )),
               Container(
                 decoration: BoxDecoration(
                   border: Border.all(width: 4, color: Colors.white),

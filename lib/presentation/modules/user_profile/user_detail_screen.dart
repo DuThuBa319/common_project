@@ -1,5 +1,8 @@
 import 'dart:io';
-import 'package:http/http.dart' as http;
+
+import 'package:dio/dio.dart';
+import 'package:flutter/services.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:common_project/domain/entities/user_entity.dart';
 import 'package:common_project/presentation/bloc/userlist/get_user_bloc/get_user_bloc.dart';
 import 'package:common_project/presentation/common_widget/enum_common.dart';
@@ -15,13 +18,13 @@ import '../../common_widget/custom_image_picker.dart';
 import '../../common_widget/loading_widget.dart';
 import '../../theme/app_text_theme.dart';
 import 'user_edit_screen.dart';
+import 'package:http/http.dart' as http;
 part 'user_detail_screen.action.dart';
 
 //Class Home
 class UserDetailScreen extends StatefulWidget {
   final int id;
   final GetUserBloc userBloc;
-
 
   const UserDetailScreen({
     Key? key,
@@ -36,15 +39,27 @@ class UserDetailScreen extends StatefulWidget {
 class _UserDetailScreenState extends State<UserDetailScreen> {
   GetUserDetailBloc get detailBloc => BlocProvider.of(context);
   String? folderPath;
-   String imageUrl = 'https://example.com/image.jpg';
-   String fileName = 'image.jpg';
+  List<String> imageUrlInit = [
+    "https://121quotes.com/wp-content/uploads/2020/03/Cristiano-Ronaldo-Wallpaper-HD-For-Free-Download.jpg",
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/LeBron_James_%2851959977144%29_%28cropped2%29.jpg/800px-LeBron_James_%2851959977144%29_%28cropped2%29.jpg'
+  ];
+  // String imageUrlCR7 =
+  //     "https://121quotes.com/wp-content/uploads/2020/03/Cristiano-Ronaldo-Wallpaper-HD-For-Free-Download.jpg";
+  // String imageUrlLeBron =
+  //     'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/LeBron_James_%2851959977144%29_%28cropped2%29.jpg/800px-LeBron_James_%2851959977144%29_%28cropped2%29.jpg';
+  String imageUrl =
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/LeBron_James_%2851959977144%29_%28cropped2%29.jpg/800px-LeBron_James_%2851959977144%29_%28cropped2%29.jpg';
+  // String fileName = 'wp-content/uploads/imago1029322324w.jpg';
+  List<XFile> imageList = [];
   final imagePicker = ImagePicker();
 
-  // String selectedImageName = '';
+  // String selectedImageName = '';S
   @override
-  void initState() {
-    // TODO: implement initState
+  initState() {
     super.initState();
+   
+      _downloadImage(imageUrlInit);
+ 
     folderPath = "lib/assets/images/";
   }
 
@@ -85,8 +100,9 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         ImagePickerWithGridView(
+                          imageList: imageList,
                           isOnTapActive: true,
-                          folderPath: folderPath,
+                          assetPath: folderPath,
                         ),
                         RichText(
                           text: TextSpan(
@@ -175,8 +191,29 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                           ),
                         ),
                         Container(
-                            margin: const EdgeInsets.only(left: 250),
+                            margin: const EdgeInsets.only(left: 180),
                             child: Row(children: [
+                              SizedBox(
+                                  height: 60,
+                                  width: 60,
+                                  child: OutlinedButton(
+                                      style: OutlinedButton.styleFrom(
+                                        side: const BorderSide(
+                                            width: 2,
+                                            color: AppColor.appBarColor),
+                                        padding: EdgeInsets.zero,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(25),
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        saveImageToGallery(imageUrl);
+                                      },
+                                      child: const Icon(Icons.file_download))),
+                              const SizedBox(
+                                width: 10,
+                              ),
                               SizedBox(
                                   height: 60,
                                   width: 60,
