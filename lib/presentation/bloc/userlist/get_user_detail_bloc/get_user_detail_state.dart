@@ -3,27 +3,23 @@ part of 'get_user_detail_bloc.dart';
 // ViewModel is used for store all properties which want to be stored, processed and updated, chứa dữ liệu của 1 state
 class _ViewModel {
   final UserEntity? userDetailEntity;
-  final File? imageFile;
+  final List<XFile>? imageFiles;
   final bool? isZoomed;
   final String? imageUrl;
 
-  const _ViewModel({
-    this.userDetailEntity,
-    this.imageFile,
-    this.isZoomed,
-    this.imageUrl
-  });
+  const _ViewModel(
+      {this.userDetailEntity, this.imageFiles, this.isZoomed, this.imageUrl});
 
   // Using copyWith function to retains the before data and just "update some specific props" instead of "update all props"
   _ViewModel copyWith({
     UserEntity? userDetailEntity,
-    File? imageFile,
+    List<XFile>? imageFiles,
     bool? isZoomed,
     String? imageUrl,
   }) {
     return _ViewModel(
       userDetailEntity: userDetailEntity ?? this.userDetailEntity,
-      imageFile: imageFile ?? this.imageFile,
+      imageFiles: imageFiles ?? this.imageFiles,
       isZoomed: isZoomed ?? this.isZoomed,
       imageUrl: imageUrl ?? this.imageUrl,
     );
@@ -52,7 +48,7 @@ abstract class GetUserDetailState {
 }
 
 class DeleteImageState extends GetDetailUserState {
- DeleteImageState({
+  DeleteImageState({
     // ignore: library_private_types_in_public_api
     _ViewModel viewModel = const _ViewModel(),
     BlocStatusState status = BlocStatusState.initial,
@@ -60,7 +56,7 @@ class DeleteImageState extends GetDetailUserState {
 }
 
 class PickImageState extends GetDetailUserState {
- PickImageState({
+  PickImageState({
     // ignore: library_private_types_in_public_api
     _ViewModel viewModel = const _ViewModel(),
     BlocStatusState status = BlocStatusState.initial,
@@ -125,7 +121,7 @@ final _factories = <Type,
         viewModel: viewModel,
         status: status,
       ),
- PickImageState: (viewModel, status) => PickImageState(
+  PickImageState: (viewModel, status) => PickImageState(
         viewModel: viewModel,
         status: status,
       ),
@@ -133,7 +129,7 @@ final _factories = <Type,
         viewModel: viewModel,
         status: status,
       ),
- DeleteImageState: (viewModel, status) => DeleteImageState(
+  DeleteImageState: (viewModel, status) => DeleteImageState(
         viewModel: viewModel,
         status: status,
       ),

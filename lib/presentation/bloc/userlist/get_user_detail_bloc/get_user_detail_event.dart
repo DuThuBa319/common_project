@@ -22,15 +22,10 @@ class UpdateUserEvent extends UserDetailEvent {
   UpdateUserEvent({required this.userId, required this.user}) : super();
 }
 
-
-
-
-
 class PickImageEvent extends UserDetailEvent {
   PickImageEvent({this.source});
   final ImageSource? source;
 }
-
 
 class DeleteImageEvent extends UserDetailEvent {}
 
@@ -43,6 +38,11 @@ class ReplaceImageEvent extends UserDetailEvent {
 class LoadImageEvent extends UserDetailEvent {
   LoadImageEvent({this.imageFile});
   final File? imageFile;
+}
+
+class ImageChangedEvent extends UserDetailEvent {
+  ImageChangedEvent({this.imageFiles});
+  final List<XFile>? imageFiles;
 }
 
 // class FilterUserEvent extends UserEvent {

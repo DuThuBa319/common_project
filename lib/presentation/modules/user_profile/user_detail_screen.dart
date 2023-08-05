@@ -1,7 +1,8 @@
-import 'dart:async';
-
 import 'dart:io';
-import 'dart:typed_data';
+
+import 'package:dio/dio.dart';
+import 'package:flutter/services.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:common_project/domain/entities/user_entity.dart';
 import 'package:common_project/presentation/bloc/userlist/get_user_bloc/get_user_bloc.dart';
 import 'package:common_project/presentation/common_widget/enum_common.dart';
@@ -9,16 +10,15 @@ import 'package:common_project/presentation/common_widget/screen_form/custom_scr
 import 'package:common_project/presentation/theme/theme_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:full_screen_image/full_screen_image.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import '../../../di/di.dart';
 import '../../bloc/userlist/get_user_detail_bloc/get_user_detail_bloc.dart';
-import '../../common_widget/dialog/show_toast.dart';
+import '../../common_widget/custom_image_picker.dart';
 import '../../common_widget/loading_widget.dart';
 import '../../theme/app_text_theme.dart';
 import 'user_edit_screen.dart';
-
+import 'package:http/http.dart' as http;
 part 'user_detail_screen.action.dart';
 
 //Class Home
@@ -38,12 +38,26 @@ class UserDetailScreen extends StatefulWidget {
 
 class _UserDetailScreenState extends State<UserDetailScreen> {
   GetUserDetailBloc get detailBloc => BlocProvider.of(context);
-  TextEditingController fileNameController = TextEditingController();
+  String? folderPath;
 
-  final List<File?> _images = List.generate(4, (_) => null);
-  String? _imagePath;
+  // String imageUrlCR7 =
+  //     "https://121quotes.com/wp-content/uploads/2020/03/Cristiano-Ronaldo-Wallpaper-HD-For-Free-Download.jpg";
+  // String imageUrlLeBron =
+  //     'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/LeBron_James_%2851959977144%29_%28cropped2%29.jpg/800px-LeBron_James_%2851959977144%29_%28cropped2%29.jpg';
+  String imageUrl =
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/LeBron_James_%2851959977144%29_%28cropped2%29.jpg/800px-LeBron_James_%2851959977144%29_%28cropped2%29.jpg';
+  // String fileName = 'wp-content/uploads/imago1029322324w.jpg';
+
   final imagePicker = ImagePicker();
-  // String selectedImageName = '';
+
+  // String selectedImageName = '';S
+  @override
+  initState() {
+    super.initState();
+
+    folderPath = "lib/assets/images/";
+  }
+
   @override
   Widget build(BuildContext context) {
     return CustomScreenForm(
@@ -78,83 +92,19 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                   child: Container(
                     margin: const EdgeInsets.only(top: 20, left: 10),
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        GridView.builder(
-                            shrinkWrap:
-                                true, //True ==> Kích thước của GridView tự động co lại để phù hợp các phần tử con
-                            physics:
-                                const NeverScrollableScrollPhysics(), //Never => không được cuộn để lướt các GridView
-
-                            itemCount: _images.length,
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                            ),
-                            itemBuilder: (context, index) {
-                              return Stack(children: [
-                                Container(
-                                    margin: const EdgeInsets.only(left: 20),
-                                    height: 150,
-                                    width: 150,
-                                    decoration: BoxDecoration(
-                                        border: Border.all(
-                                            width: 1,
-                                            color: AppColor.appBarColor),
-                                        borderRadius:
-                                            BorderRadiusDirectional.circular(
-                                                20)),
-                                    child: _images[index] != null &&
-                                            _imagePath != null
-                                        ? ClipRRect(
-                                            borderRadius:
-                                                BorderRadiusDirectional
-                                                    .circular(20),
-                                            child: FullScreenWidget(
-                                                disposeLevel: DisposeLevel.High,
-                                                child: Image.file(
-                                                  File(_images[index]!.path),
-                                                  fit: BoxFit.cover,
-                                                )),
-                                          )
-                                        : const Icon(Icons.people_alt_outlined,
-                                            color: AppColor.appBarColor,
-                                            size: 50)),
-                                Container(
-                                    decoration: BoxDecoration(
-                                        border: Border.all(
-                                            width: 4, color: Colors.white),
-                                        color: AppColor.appBarColor,
-                                        shape: BoxShape.circle),
-                                    margin: const EdgeInsets.only(
-                                        left: 120, top: 120),
-                                    child: SizedBox(
-                                        height: 60,
-                                        width: 60,
-                                        child: IconButton(
-                                            style: IconButton.styleFrom(
-                                              side: const BorderSide(
-                                                  width: 2,
-                                                  color: AppColor.appBarColor),
-                                              padding: EdgeInsets.zero,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(25),
-                                              ),
-                                            ),
-                                            icon: const Icon(
-                                              Icons.add_a_photo,
-                                              color: AppColor.white,
-                                              size: 30,
-                                            ),
-                                            onPressed: () {
-                                              selectSource(context, index);
-                                            }
-                                            //
-                                            )))
-                              ]);
-                            }),
+                        ImagePickerWithGridView(
+                          imageFiles: state.viewModel.imageFiles ?? [],
+                          isOnTapActive: true,
+                          onImageRemoved: (imageList) {
+                            if (imageList.length !=
+                                state.viewModel.imageFiles!.length) {
+                              detailBloc.add(
+                                  ImageChangedEvent(imageFiles: imageList));
+                            }
+                          },
+                        ),
                         RichText(
                           text: TextSpan(
                             style: DefaultTextStyle.of(context).style,
@@ -165,6 +115,9 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                                   style: AppTextTheme.body1)
                             ],
                           ),
+                        ),
+                        const SizedBox(
+                          height: 15,
                         ),
                         RichText(
                           text: TextSpan(
@@ -178,10 +131,13 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                             ],
                           ),
                         ),
+                        const SizedBox(
+                          height: 15,
+                        ),
                         RichText(
                           text: TextSpan(
                             style: DefaultTextStyle.of(context).style,
-                            children: <TextSpan>[
+                            children: [
                               TextSpan(
                                   text: 'Age:', style: AppTextTheme.title6),
                               TextSpan(
@@ -189,6 +145,9 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                                   style: AppTextTheme.body1)
                             ],
                           ),
+                        ),
+                        const SizedBox(
+                          height: 15,
                         ),
                         RichText(
                           text: TextSpan(
@@ -202,6 +161,9 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                             ],
                           ),
                         ),
+                        const SizedBox(
+                          height: 15,
+                        ),
                         RichText(
                           text: TextSpan(
                             style: DefaultTextStyle.of(context).style,
@@ -213,6 +175,9 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                                   style: AppTextTheme.body1)
                             ],
                           ),
+                        ),
+                        const SizedBox(
+                          height: 15,
                         ),
                         RichText(
                           text: TextSpan(
@@ -227,8 +192,29 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                           ),
                         ),
                         Container(
-                            margin: const EdgeInsets.only(left: 250),
+                            margin: const EdgeInsets.only(left: 180),
                             child: Row(children: [
+                              SizedBox(
+                                  height: 60,
+                                  width: 60,
+                                  child: OutlinedButton(
+                                      style: OutlinedButton.styleFrom(
+                                        side: const BorderSide(
+                                            width: 2,
+                                            color: AppColor.appBarColor),
+                                        padding: EdgeInsets.zero,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(25),
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        saveImageToGallery(imageUrl);
+                                      },
+                                      child: const Icon(Icons.file_download))),
+                              const SizedBox(
+                                width: 10,
+                              ),
                               SizedBox(
                                   height: 60,
                                   width: 60,

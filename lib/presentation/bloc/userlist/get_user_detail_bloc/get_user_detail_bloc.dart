@@ -2,11 +2,12 @@
 
 import 'dart:async';
 import 'dart:io';
-
+import 'package:http/http.dart' as http;
 import 'package:bloc/bloc.dart';
 import "package:image_picker/image_picker.dart";
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../../../data/models/user_model.dart';
@@ -25,9 +26,11 @@ class GetUserDetailBloc extends Bloc<UserDetailEvent, GetUserDetailState> {
     on<GetUserDetailEvent>(_onGetUserDetail);
     on<DeleteUserEvent>(_onDeleteUser);
     on<UpdateUserEvent>(_onUpdateUser);
-    on<PickImageEvent>(_onPickImage);
-    on<DeleteImageEvent>(_onDeleteImage);
-    on<ReplaceImageEvent>(_onReplaceImage);
+    on<ImageChangedEvent>(_onImageChanged);
+    // on<PickImageEvent>(_onPickImage);
+    // on<DeleteImageEvent>(_onDeleteImage);
+    // on<ReplaceImageEvent>(_onReplaceImage);
+
     // on<LoadImageEvent>(_onLoadImage);
   }
 
@@ -56,89 +59,89 @@ class GetUserDetailBloc extends Bloc<UserDetailEvent, GetUserDetailState> {
   // }
 
 // REPLACE IMAGE
-  Future<void> _onReplaceImage(
-    ReplaceImageEvent event,
-    Emitter<GetUserDetailState> emit,
-  ) async {
-    emit(
-      GetDetailUserState(
-        status: BlocStatusState.loading,
-        viewModel: state.viewModel,
-      ),
-    );
+//   Future<void> _onReplaceImage(
+//     ReplaceImageEvent event,
+//     Emitter<GetUserDetailState> emit,
+//   ) async {
+//     emit(
+//       GetDetailUserState(
+//         status: BlocStatusState.loading,
+//         viewModel: state.viewModel,
+//       ),
+//     );
 
-    try {
-      final imageFile = await selectFile(event.source ?? ImageSource.gallery);
-      final newViewModel = state.viewModel.copyWith(imageFile: imageFile);
-      emit(state.copyWith(
-        status: BlocStatusState.success,
-        viewModel: newViewModel,
-      ));
-    } catch (e) {
-      emit(
-        state.copyWith(
-          status: BlocStatusState.failure,
-          viewModel: state.viewModel,
-        ),
-      );
-    }
-  }
+//     try {
+//       final imageFile = await selectFile(event.source ?? ImageSource.gallery);
+//       final newViewModel = state.viewModel.copyWith(imageFile: imageFile);
+//       emit(state.copyWith(
+//         status: BlocStatusState.success,
+//         viewModel: newViewModel,
+//       ));
+//     } catch (e) {
+//       emit(
+//         state.copyWith(
+//           status: BlocStatusState.failure,
+//           viewModel: state.viewModel,
+//         ),
+//       );
+//     }
+//   }
 
-// DELETE IMAGE
-  Future<void> _onDeleteImage(
-    DeleteImageEvent event,
-    Emitter<GetUserDetailState> emit,
-  ) async {
-    emit(
-      GetDetailUserState(
-        status: BlocStatusState.loading,
-        viewModel: state.viewModel,
-      ),
-    );
-    try {
-      final newViewModel = state.viewModel.copyWith(imageFile: null);
-      emit(state.copyWith(
-        status: BlocStatusState.success,
-        viewModel: newViewModel,
-      ));
-    } catch (e) {
-      emit(
-        state.copyWith(
-          status: BlocStatusState.failure,
-          viewModel: state.viewModel,
-        ),
-      );
-    }
-  }
+// // DELETE IMAGE
+//   Future<void> _onDeleteImage(
+//     DeleteImageEvent event,
+//     Emitter<GetUserDetailState> emit,
+//   ) async {
+//     emit(
+//       GetDetailUserState(
+//         status: BlocStatusState.loading,
+//         viewModel: state.viewModel,
+//       ),
+//     );
+//     try {
+//       final newViewModel = state.viewModel.copyWith(imageFile: null);
+//       emit(state.copyWith(
+//         status: BlocStatusState.success,
+//         viewModel: newViewModel,
+//       ));
+//     } catch (e) {
+//       emit(
+//         state.copyWith(
+//           status: BlocStatusState.failure,
+//           viewModel: state.viewModel,
+//         ),
+//       );
+//     }
+//   }
 
 // PICK IMAGE
-  Future<void> _onPickImage(
-    PickImageEvent event,
-    Emitter<GetUserDetailState> emit,
-  ) async {
-    emit(
-      GetDetailUserState(
-        status: BlocStatusState.loading,
-        viewModel: state.viewModel,
-      ),
-    );
+  // Future<void> _onPickImage(
+  //   PickImageEvent event,
+  //   Emitter<GetUserDetailState> emit,
+  // ) async {
+  //   emit(
+  //     GetDetailUserState(
+  //       status: BlocStatusState.loading,
+  //       viewModel: state.viewModel,
+  //     ),
+  //   );
 
-    try {
-      final imageFile = await selectFile(event.source ?? ImageSource.gallery);
-      final newViewModel = state.viewModel.copyWith(imageFile: imageFile);
-      emit(state.copyWith(
-        status: BlocStatusState.success,
-        viewModel: newViewModel,
-      ));
-    } catch (e) {
-      emit(
-        state.copyWith(
-          status: BlocStatusState.failure,
-          viewModel: state.viewModel,
-        ),
-      );
-    }
-  }
+  //   try {
+  //     final imageFile = await selectFile(event.source ?? ImageSource.gallery);
+  //     final newViewModel = state.viewModel.copyWith(imageFile: imageFile);
+  //     emit(state.copyWith(
+  //       status: BlocStatusState.success,
+  //       viewModel: newViewModel,
+  //     ));
+  //   } catch (e) {
+  //     emit(
+  //       state.copyWith(
+  //         status: BlocStatusState.failure,
+  //         viewModel: state.viewModel,
+  //       ),
+  //     );
+  //   }
+  // }
 
   Future<void> _onGetUserDetail(
     GetUserDetailEvent event,
@@ -152,9 +155,44 @@ class GetUserDetailBloc extends Bloc<UserDetailEvent, GetUserDetailState> {
     );
 
     try {
+      List<String> listImageUrl = [
+        "https://121quotes.com/wp-content/uploads/2020/03/Cristiano-Ronaldo-Wallpaper-HD-For-Free-Download.jpg",
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/LeBron_James_%2851959977144%29_%28cropped2%29.jpg/800px-LeBron_James_%2851959977144%29_%28cropped2%29.jpg'
+      ];
+      List<XFile> listImageFile = await _downloadImage(listImageUrl);
       final response =
           await _userUserDetailCase.getUserDetailEntity(event.userId);
-      final newViewModel = state.viewModel.copyWith(userDetailEntity: response);
+      final newViewModel = state.viewModel
+          .copyWith(userDetailEntity: response, imageFiles: listImageFile);
+      emit(state.copyWith(
+        status: BlocStatusState.success,
+        viewModel: newViewModel,
+      ));
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: BlocStatusState.failure,
+          viewModel: state.viewModel,
+        ),
+      );
+    }
+  }
+
+  Future<void> _onImageChanged(
+    ImageChangedEvent event,
+    Emitter<GetUserDetailState> emit,
+  ) async {
+    emit(
+      GetDetailUserState(
+        status: BlocStatusState.loading,
+        viewModel: state.viewModel,
+      ),
+    );
+
+    try {
+      final newViewModel =
+          state.viewModel.copyWith(imageFiles: event.imageFiles);
+
       emit(state.copyWith(
         status: BlocStatusState.success,
         viewModel: newViewModel,
@@ -245,5 +283,23 @@ class GetUserDetailBloc extends Bloc<UserDetailEvent, GetUserDetailState> {
       }
     }
     return null;
+  }
+
+  Future<List<XFile>> _downloadImage(List<String> urls) async {
+    List<XFile> imageList = [];
+    for (var url in urls) {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final documentDirectory = await getTemporaryDirectory();
+        final filePath =
+            '${documentDirectory.path}/${DateTime.now().millisecondsSinceEpoch.toString()}.png';
+        File file1 = File(filePath);
+        await file1.writeAsBytes(response.bodyBytes);
+        XFile xfile1 = XFile(file1.path);
+        imageList.add(xfile1);
+      }
+    }
+
+    return imageList;
   }
 }

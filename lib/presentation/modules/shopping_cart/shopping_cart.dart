@@ -32,6 +32,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
         isShowRightButon: true,
         selectedIndex: 1,
         isShowBottomNayvigationBar: true,
+        isScrollable: true,
         rightButton: Row(
           children: [
             const IconButton(
@@ -85,6 +86,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
           //CONTAINER NỀN TRẮNG
           Container(
             margin: EdgeInsets.only(top: size.height * 0.32),
+            height: MediaQuery.of(context).size.height * 0.7,
             decoration: const BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.only(

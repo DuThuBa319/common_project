@@ -21,8 +21,8 @@ extension LoginAction on _LoginState {
   }
 
   Future<void> login() async {
-    final userName = _usernameController.text;
-    final password = _passwordController.text;
+    final userName = _accountCtroller.text;
+    final password = _passCtroller.text;
     bloc.add(
       LoginUserEvent(
         username: userName,
